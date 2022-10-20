@@ -9,29 +9,29 @@ static const char * aergo_lua_to_json(lua_State* L, int args_pos);
 aergo *instance = NULL;
 
 static void aergo_lua_account_to_table(lua_State* L, aergo_account account) {
-    int index = -2;
+    const int table = -2;
     lua_newtable(L);
     lua_pushboolean(L, account.use_ledger);
-    lua_setfield(L, index, "use_ledger");
+    lua_setfield(L, table, "use_ledger");
     lua_pushinteger(L, account.index);
-    lua_setfield(L, index, "index");
+    lua_setfield(L, table, "index");
     lua_pushlstring(L, (const char*) &account.privkey, sizeof(account.privkey));
-    lua_setfield(L, index, "privkey");
+    lua_setfield(L, table, "privkey");
     lua_pushlstring(L, (const char*) &account.pubkey, sizeof(account.pubkey));
-    lua_setfield(L, index, "pubkey");
+    lua_setfield(L, table, "pubkey");
     lua_pushlstring(L, (const char*) &account.address, sizeof(account.address));
-    lua_setfield(L, index, "address");
+    lua_setfield(L, table, "address");
     lua_pushinteger(L, account.nonce);
-    lua_setfield(L, index, "nonce");
+    lua_setfield(L, table, "nonce");
     lua_pushnumber(L, account.balance);
-    lua_setfield(L, index, "balance");
+    lua_setfield(L, table, "balance");
 
     lua_createtable(L, sizeof(account.state_root), 0);
     for (int i = 0; i < sizeof(account.state_root); i++) {
       lua_pushinteger(L, account.state_root[i]);
-      lua_rawseti(L, index, i + 1);
+      lua_rawseti(L, table, i + 1);
     }
-    lua_setfield(L, index, "state_root");
+    lua_setfield(L, table, "state_root");
 }
 
 static aergo_account aergo_lua_table_to_account(lua_State* L, int index) {
@@ -90,28 +90,28 @@ static aergo_account aergo_lua_table_to_account(lua_State* L, int index) {
 }
 
 static void aergo_lua_receipt_to_table(lua_State* L, transaction_receipt *receipt) {
-    int index = -2;
+    const int table = -2;
     lua_newtable(L);
     lua_pushstring(L, receipt->blockHash);
-    lua_setfield(L, -2, "blockHash");
+    lua_setfield(L, table, "blockHash");
     lua_pushinteger(L, receipt->blockNo);
-    lua_setfield(L, -2, "blockNo");
+    lua_setfield(L, table, "blockNo");
     lua_pushstring(L, receipt->contractAddress);
-    lua_setfield(L, -2, "contractAddress");
+    lua_setfield(L, table, "contractAddress");
     lua_pushboolean(L, receipt->feeDelegation);
-    lua_setfield(L, -2, "feeDelegation");
+    lua_setfield(L, table, "feeDelegation");
     lua_pushnumber(L, receipt->feeUsed);
-    lua_setfield(L, -2, "feeUsed");
+    lua_setfield(L, table, "feeUsed");
     lua_pushinteger(L, receipt->gasUsed);
-    lua_setfield(L, -2, "gasUsed");
+    lua_setfield(L, table, "gasUsed");
     lua_pushstring(L, receipt->ret);
-    lua_setfield(L, -2, "ret");
+    lua_setfield(L, table, "ret");
     lua_pushstring(L, receipt->status);
-    lua_setfield(L, -2, "status");
+    lua_setfield(L, table, "status");
     lua_pushstring(L, receipt->txHash);
-    lua_setfield(L, -2, "txHash");
+    lua_setfield(L, table, "txHash");
     lua_pushinteger(L, receipt->txIndex);
-    lua_setfield(L, -2, "txIndex");
+    lua_setfield(L, table, "txIndex");
 }
 
 static int aergo_lua_connect(lua_State* L) {
