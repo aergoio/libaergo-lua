@@ -89,6 +89,31 @@ static aergo_account aergo_lua_table_to_account(lua_State* L, int index) {
     return account;
 }
 
+static void aergo_lua_receipt_to_table(lua_State* L, transaction_receipt *receipt) {
+    int index = -2;
+    lua_newtable(L);
+    lua_pushstring(L, receipt->blockHash);
+    lua_setfield(L, -2, "blockHash");
+    lua_pushinteger(L, receipt->blockNo);
+    lua_setfield(L, -2, "blockNo");
+    lua_pushstring(L, receipt->contractAddress);
+    lua_setfield(L, -2, "contractAddress");
+    lua_pushboolean(L, receipt->feeDelegation);
+    lua_setfield(L, -2, "feeDelegation");
+    lua_pushnumber(L, receipt->feeUsed);
+    lua_setfield(L, -2, "feeUsed");
+    lua_pushinteger(L, receipt->gasUsed);
+    lua_setfield(L, -2, "gasUsed");
+    lua_pushstring(L, receipt->ret);
+    lua_setfield(L, -2, "ret");
+    lua_pushstring(L, receipt->status);
+    lua_setfield(L, -2, "status");
+    lua_pushstring(L, receipt->txHash);
+    lua_setfield(L, -2, "txHash");
+    lua_pushinteger(L, receipt->txIndex);
+    lua_setfield(L, -2, "txIndex");
+}
+
 static int aergo_lua_connect(lua_State* L) {
   const char *host = luaL_checkstring(L, 1);
   int port = luaL_checkinteger(L, 2);
@@ -155,33 +180,36 @@ static int aergo_lua_call_smart_contract(lua_State* L) {
     const char *args = aergo_lua_to_json(L, 4);
 
     struct transaction_receipt receipt = {0};
-    lua_newtable(L);
 
     if (aergo_call_smart_contract_json(instance, &receipt, &account, contract_address, function, args)) {
-        lua_pushstring(L, receipt.blockHash);
-        lua_setfield(L, -2, "blockHash");
-        lua_pushinteger(L, receipt.blockNo);
-        lua_setfield(L, -2, "blockNo");
-        lua_pushstring(L, receipt.contractAddress);
-        lua_setfield(L, -2, "contractAddress");
-        lua_pushboolean(L, receipt.feeDelegation);
-        lua_setfield(L, -2, "feeDelegation");
-        lua_pushnumber(L, receipt.feeUsed);
-        lua_setfield(L, -2, "feeUsed");
-        lua_pushinteger(L, receipt.gasUsed);
-        lua_setfield(L, -2, "gasUsed");
-        lua_pushstring(L, receipt.ret);
-        lua_setfield(L, -2, "ret");
-        lua_pushstring(L, receipt.status);
-        lua_setfield(L, -2, "status");
-        lua_pushstring(L, receipt.txHash);
-        lua_setfield(L, -2, "txHash");
-        lua_pushinteger(L, receipt.txIndex);
-        lua_setfield(L, -2, "txIndex");
+        aergo_lua_receipt_to_table(L, &receipt);
         // update the nonce on the account table
         lua_pushinteger(L, account.nonce);
         lua_setfield(L, 1, "nonce");
     } else {
+        lua_newtable(L);
+        lua_pushstring(L, "FAILED");
+        lua_setfield(L, -2, "status");
+        lua_pushstring(L, receipt.ret);
+        lua_setfield(L, -2, "ret");
+    }
+    return 1;
+}
+
+static int aergo_lua_transfer(lua_State* L) {
+    aergo_account account = aergo_lua_table_to_account(L, 1);
+    const char *recipient = lua_tostring(L, 2);
+    const char *amount = lua_tostring(L, 3);
+
+    struct transaction_receipt receipt = {0};
+
+    if (aergo_transfer_str(instance, &receipt, &account, recipient, amount)) {
+        aergo_lua_receipt_to_table(L, &receipt);
+        // update the nonce on the account table
+        lua_pushinteger(L, account.nonce);
+        lua_setfield(L, 1, "nonce");
+    } else {
+        lua_newtable(L);
         lua_pushstring(L, "FAILED");
         lua_setfield(L, -2, "status");
         lua_pushstring(L, receipt.ret);
@@ -197,6 +225,7 @@ int luaopen_aergo(lua_State* L) {
     {"get_account_state", aergo_lua_get_account_state},
     {"query", aergo_lua_query},
     {"call", aergo_lua_call_smart_contract},
+    {"transfer", aergo_lua_transfer},
     {NULL, NULL}
   };
 

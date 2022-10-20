@@ -69,3 +69,49 @@ print("------------------------------------")
 print("Smart Contract Query ", response.success and "OK" or "FAILED")
 print("Response:", response.result)
 print("------------------------------------")
+
+
+-- test transfer of native (aergo) tokens
+
+local privkey2 = "\xDB\x85\xDD\x0C\xBA\x47\x32\xA1\x1A\xEB\x3C\x7C\x48\x91\xFB\xD2\xFE\xC4\x5F\xC7\x2D\xB3\x3F\xB6\x1F\x31\xEB\x57\xE7\x24\x61\x75"
+
+local account2 = aergo.get_account_state(false, privkey2)
+print("------------- ACCOUNT 2 ------------")
+print("address: ", account2.address)
+print("nonce: ", account2.nonce)
+print("balance: ", account2.balance)
+print("state_root: ", account2.state_root)
+print("------------------------------------")
+
+local receipt = aergo.transfer(account, account2.address, '0.25')
+print("------------- TRANSFER -------------")
+print("status: ", receipt.status)
+print("ret: ", receipt.ret)
+print("blockNo: ", receipt.blockNo)
+print("blockHash: ", to_hex(receipt.blockHash))
+print("txIndex: ", receipt.txIndex)
+print("txHash: ", to_hex(receipt.txHash))
+print("contractAddress: ", receipt.contractAddress)
+print("gasUsed: ", receipt.gasUsed)
+print("feeUsed: ", receipt.feeUsed)
+print("feeDelegation: ", receipt.feeDelegation)
+print("------------------------------------")
+print("nonce: ", account.nonce)
+print("------------------------------------")
+
+
+local account = aergo.get_account_state(false, privkey)
+print("------------- ACCOUNT 1 ------------")
+print("address: ", account.address)
+print("nonce: ", account.nonce)
+print("balance: ", account.balance)
+print("state_root: ", account.state_root)
+print("------------------------------------")
+
+local account2 = aergo.get_account_state(false, privkey2)
+print("------------- ACCOUNT 2 ------------")
+print("address: ", account2.address)
+print("nonce: ", account2.nonce)
+print("balance: ", account2.balance)
+print("state_root: ", account2.state_root)
+print("------------------------------------")
