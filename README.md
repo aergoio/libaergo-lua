@@ -59,6 +59,8 @@ There are 2 ways to have accounts:
 * Using a secret (private) key on your app
 * Using hardware wallet (Ledger Nano)
 
+The private key is a random 32 bytes string.
+
 Before making a call we need to get the account state.
 
 Example with a private key:
@@ -66,7 +68,7 @@ Example with a private key:
 ```lua
 local privkey = "\xDB\x85\xDD\x0C\xBA\x47\x32\xA1\x1A\xEB\x3C\x7C\x48\x91\xFB\xD2\xFE\xC4\x5F\xC7\x2D\xB3\x3F\xB6\x1F\x31\xEB\x57\xE7\x24\x61\x76"
 
-local account = aergo.get_account_state(false, privkey)
+local account = aergo.get_account_state(false, privkey)  -- false => use private key
 
 print("address: ", account.address)
 print("nonce: ", account.nonce)
@@ -76,7 +78,7 @@ print("balance: ", account.balance)
 Example with a hardware wallet:
 
 ```lua
-local account = aergo.get_account_state(true, 0)
+local account = aergo.get_account_state(true, 0)  -- true => use hardware wallet, the integer is the account index >= 0
 
 print("address: ", account.address)
 print("nonce: ", account.nonce)
@@ -98,6 +100,10 @@ print("contractAddress: ", receipt.contractAddress)
 print("gasUsed: ", receipt.gasUsed)
 print("feeUsed: ", receipt.feeUsed)
 ```
+
+When using the testnet it is possible to add funds to the account using the [faucet](https://faucet.aergoscan.io/)
+
+When using the mainnet you need to acquire aergo tokens
 
 
 ### Working example
