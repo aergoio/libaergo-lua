@@ -105,6 +105,22 @@ When using the testnet it is possible to add funds to the account using the [fau
 
 When using the mainnet you need to acquire aergo tokens
 
+Here is how to transfer aergo tokens to another account programmatically:
+
+```lua
+local receipt = aergo.transfer(account, recipient_address, amount)
+
+print("status: ", receipt.status)
+print("returned: ", receipt.ret)
+print("blockNo: ", receipt.blockNo)
+print("blockHash: ", to_hex(receipt.blockHash))
+print("txIndex: ", receipt.txIndex)
+print("txHash: ", to_hex(receipt.txHash))
+print("contractAddress: ", receipt.contractAddress)
+print("gasUsed: ", receipt.gasUsed)
+print("feeUsed: ", receipt.feeUsed)
+```
+
 
 ### Working example
 
